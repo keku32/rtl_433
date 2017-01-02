@@ -43,7 +43,6 @@ endif()
 ########################################################################
 # Find build dependencies
 ########################################################################
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 find_package(paho REQUIRED)
 if (PAHO_FOUND)
     message(STATUS "Paho found: " ${PAHO_ROOT_DIR} )
@@ -54,8 +53,8 @@ endif()
 find_package(PkgConfig)
 find_package(LibRTLSDR)
 
-find_path(PAHO_INCLUDE_DIR MQTTClient.h)
-find_library(PAHO_LIBRARY NAMES paho-mqtt3c)
+#find_path(PAHO_INCLUDE_DIR MQTTClient.h)
+#find_library(PAHO_LIBRARY NAMES paho-mqtt3c)
 
 ########################################################################
 # Setup the include and linker paths
