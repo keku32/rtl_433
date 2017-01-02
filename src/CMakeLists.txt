@@ -95,7 +95,8 @@ add_library(data data.c)
 
 target_link_libraries(rtl_433
 	${LIBRTLSDR_LIBRARIES}
-    ${CMAKE_THREAD_LIBS_INIT}
+	${CMAKE_THREAD_LIBS_INIT}
+	${PAHO_LIBRARIES}
 )
 
 	
