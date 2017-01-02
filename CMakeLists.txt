@@ -25,7 +25,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
-file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/src/*/*.c)
+file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/src/*/*.*)
 
 ########################################################################
 # Compiler specific setup
