@@ -1047,11 +1047,7 @@ int main(int argc, char **argv) {
 		break;
 	    case 'F':
 		char split = split_string(optarg, " ");
-		int i=0;
-		while (split) {
-			printf ("Arg found %s", split[i]);
-			i++;
-		}
+                printf("%s", split);
 		if (strcmp(optarg, "json") == 0) {
             add_json_output();
 		} else if (strcmp(optarg, "mqtt") == 0) {
