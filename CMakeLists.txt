@@ -43,6 +43,14 @@ endif()
 ########################################################################
 # Find build dependencies
 ########################################################################
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+find_package(paho REQUIRED)
+if (PAHO_FOUND)
+    message(STATUS "Paho found: " ${PAHO_ROOT_DIR} )
+else()
+    message("Paho cannot be found")
+endif()
+
 find_package(PkgConfig)
 find_package(LibRTLSDR)
 
