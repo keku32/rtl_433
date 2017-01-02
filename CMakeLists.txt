@@ -44,12 +44,6 @@ endif()
 # Find build dependencies
 ########################################################################
 find_package(paho REQUIRED)
-if (PAHO_FOUND)
-    message(STATUS "Paho found: " ${PAHO_LIBRARIES} )
-else()
-    message("Paho cannot be found")
-endif()
-
 find_package(PkgConfig)
 find_package(LibRTLSDR)
 
@@ -61,11 +55,6 @@ include_directories(
 	${LIBRTLSDR_INCLUDE_DIRS}
 	${PAHO_INCLUDE_DIRS}
 )
-
-#if(PAHO_FOUND)
-#   target_link_libraries (${PROJECT_NAME} ${PAHO_LIBRARIES})
-#endif (PAHO_FOUND)
-
 ########################################################################
 # Create uninstall target
 ########################################################################
