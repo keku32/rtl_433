@@ -29,7 +29,18 @@
 #include "pulse_demod.h"
 #include "data.h"
 #include "util.h"
+#include "time.h"
 
+#include "MQTTClient.h"
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
+
+#define ADDRESS     "tcp://192.168.1.150:1883"
+#define CLIENTID    "WX_Station"
+#define TOPIC       "weatherstation"
+#define QOS         1
+#define TIMEOUT     10000L
 
 static int do_exit = 0;
 static int do_exit_async = 0, frequencies = 0, events = 0;
@@ -48,6 +59,12 @@ int debug_output = 0;
 int quiet_mode = 0;
 int utc_mode = 0;
 int overwrite_mode = 0;
+
+char *json_buffer = NULL;
+size_t buffer_size = 0;
+FILE *json_stream;
+time_t timecheck = 0;
+
 
 typedef enum  {
     CONVERT_NATIVE,
@@ -125,7 +142,7 @@ void usage(r_device *devices) {
             "\t\t 2 = FM demodulated samples (int16) (experimental)\n"
             "\t\t 3 = Raw I/Q samples (cf32, 2 channel)\n"
             "\t\t Note: If output file is specified, input will always be I/Q\n"
-            "\t[-F] kv|json|csv Produce decoded output in given format. Not yet supported by all drivers.\n"
+            "\t[-F] kv|json|mqtt|csv Produce decoded output in given format. Not yet supported by all drivers.\n"
             "\t[-C] native|si|customary Convert units in decoded output.\n"
             "\t[-T] specify number of seconds to run\n"
             "\t[-U] Print timestamps in UTC (this may also be accomplished by invocation with TZ environment variable set).\n"
@@ -220,6 +237,42 @@ typedef struct output_handler {
 static output_handler_t *output_handler = NULL;
 static output_handler_t **next_output_handler = &output_handler;
 
+
+void publish_mqtt(char* message, size_t message_len) {
+
+// ----- MQTT code starts here -----
+
+    MQTTClient client;
+    MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
+    MQTTClient_message pubmsg = MQTTClient_message_initializer;
+    MQTTClient_deliveryToken token;
+    int rc;
+ 
+    MQTTClient_create(&client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    conn_opts.keepAliveInterval = 20;
+    conn_opts.cleansession = 1;
+ 
+    if ((rc = MQTTClient_connect(client, &conn_opts)) != MQTTCLIENT_SUCCESS)
+    {
+        printf("Failed to connect, return code %d\n", rc);
+        exit(-1);
+    }
+
+    pubmsg.payload = message;
+    pubmsg.payloadlen = message_len;
+    pubmsg.qos = QOS;
+    pubmsg.retained = 0;
+    MQTTClient_publishMessage(client, TOPIC, &pubmsg, &token);
+    rc = MQTTClient_waitForCompletion(client, token, TIMEOUT);
+    printf("Message with delivery token %d delivered\n", token);
+    MQTTClient_disconnect(client, 10000);
+    MQTTClient_destroy(&client);
+
+// ----- MQTT code ends here ----
+
+}
+
+
 /* handles incoming structured data by dumping it */
 void data_acquired_handler(data_t *data)
 {
@@ -257,8 +310,21 @@ void data_acquired_handler(data_t *data)
     for (output_handler_t *output = output_handler; output; output = output->next) {
         data_print(data, output->file, output->printer, output->aux);
     }
+
+    fflush(json_stream);
+    rewind(json_stream);
+
+    if (time(0) - timecheck > 40) {
+        timecheck = time(0);
+        printf ("\nBuffer json_buffer = '%s', size = %ld\n", json_buffer, buffer_size);
+        publish_mqtt(json_buffer, strlen(json_buffer));
+//        fflush(json_stream);
+//        json_buffer = NULL;
+    }
+
     data_free(data);
 }
+
 
 static void classify_signal() {
     unsigned int i, k, max = 0, min = 1000000, t;
@@ -790,6 +856,23 @@ void add_json_output()
     next_output_handler = &output->next;
 }
 
+void add_mqtt_output()
+{
+    output_handler_t *output = calloc(1, sizeof(output_handler_t));
+    if (!output) {
+        fprintf(stderr, "rtl_433: failed to allocate memory for output handler\n");
+        exit(1);
+    }
+    output->printer = &data_json_printer;
+    json_stream = open_memstream (&json_buffer, &buffer_size);
+
+    output->file = json_stream;
+    *next_output_handler = output;
+    next_output_handler = &output->next;
+}
+
+
+
 void add_csv_output(void *aux_data)
 {
     if (!aux_data) {
@@ -941,6 +1024,8 @@ int main(int argc, char **argv) {
 	    case 'F':
 		if (strcmp(optarg, "json") == 0) {
             add_json_output();
+		} else if (strcmp(optarg, "mqtt") == 0) {
+            add_mqtt_output();
 		} else if (strcmp(optarg, "csv") == 0) {
             add_csv_output(determine_csv_fields(devices, num_r_devices));
 		} else if (strcmp(optarg, "kv") == 0) {
