@@ -25,7 +25,6 @@ endif(NOT CMAKE_BUILD_TYPE)
 set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
-file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/src/*/*.*)
 
 ########################################################################
 # Compiler specific setup
@@ -62,10 +61,8 @@ include_directories(
 	${LIBRTLSDR_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME} ${SRC_FILES})
-
 if(PAHO_FOUND)
-  target_link_libraries (${PROJECT_NAME} ${PAHO_LIBRARIES})
+   target_link_libraries (${PROJECT_NAME} ${PAHO_LIBRARIES})
 endif (PAHO_FOUND)
 
 ########################################################################
