@@ -187,6 +187,30 @@ static void sighandler(int signum) {
 #endif
 
 
+char * split_string(char * buffer, char * separator) {
+    char ** result = NULL;
+    char * p = strtok (buffer, separator);
+    int n_spaces = 0, i;
+
+    /* split string and append tokens to 'result' */
+    while (p) {
+        result = realloc (result, sizeof (char*) * ++n_spaces);
+        if (result == NULL)
+            exit (-1); /* memory allocation failed */
+
+        result[n_spaces-1] = p;
+        p = strtok (NULL, separator);
+    }
+
+    /* realloc one extra element for the last NULL */
+
+    result = realloc (result, sizeof (char*) * (n_spaces+1));
+    result[n_spaces] = 0;
+
+    return result;
+}
+
+
 static void register_protocol(struct dm_state *demod, r_device *t_dev) {
     struct protocol_state *p = calloc(1, sizeof (struct protocol_state));
     p->short_limit = (float) t_dev->short_limit / ((float) 1000000 / (float) samp_rate);
@@ -1022,6 +1046,12 @@ int main(int argc, char **argv) {
 	        quiet_mode = 1;
 		break;
 	    case 'F':
+		char split = split_string(optarg, " ");
+		int i=0;
+		while (split) {
+			printf ("Arg found %s", split[i]);
+			i++;
+		}
 		if (strcmp(optarg, "json") == 0) {
             add_json_output();
 		} else if (strcmp(optarg, "mqtt") == 0) {
