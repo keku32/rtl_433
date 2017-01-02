@@ -59,11 +59,12 @@ find_package(LibRTLSDR)
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
 	${LIBRTLSDR_INCLUDE_DIRS}
+	${PAHO_INCLUDE_DIRS}
 )
 
-if(PAHO_FOUND)
-   target_link_libraries (${PROJECT_NAME} ${PAHO_LIBRARIES})
-endif (PAHO_FOUND)
+#if(PAHO_FOUND)
+#   target_link_libraries (${PROJECT_NAME} ${PAHO_LIBRARIES})
+#endif (PAHO_FOUND)
 
 ########################################################################
 # Create uninstall target
