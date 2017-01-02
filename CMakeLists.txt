@@ -45,7 +45,7 @@ endif()
 ########################################################################
 find_package(paho REQUIRED)
 if (PAHO_FOUND)
-    message(STATUS "Paho found: " ${PAHO_INCLUDE_DIRS} )
+    message(STATUS "Paho found: " ${PAHO_LIBRARIES} )
 else()
     message("Paho cannot be found")
 endif()
