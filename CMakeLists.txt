@@ -45,7 +45,7 @@ endif()
 ########################################################################
 find_package(paho REQUIRED)
 if (PAHO_FOUND)
-    message(STATUS "Paho found: " ${PAHO_ROOT_DIR} )
+    message(STATUS "Paho found: " ${PAHO_INCLUDE_DIRS} )
 else()
     message("Paho cannot be found")
 endif()
@@ -62,9 +62,9 @@ include_directories(
 	${PAHO_INCLUDE_DIRS}
 )
 
-if(PAHO_FOUND)
-   target_link_libraries (${PROJECT_NAME} ${PAHO_LIBRARIES})
-endif (PAHO_FOUND)
+#if(PAHO_FOUND)
+#   target_link_libraries (${PROJECT_NAME} ${PAHO_LIBRARIES})
+#endif (PAHO_FOUND)
 
 ########################################################################
 # Create uninstall target
