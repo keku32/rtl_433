@@ -62,7 +62,7 @@ include_directories(
 )
 
 if(PAHO_FOUND)
-  target_link_libraries (${PROJECT_NAME} ${PAHO_LIBRARIES})
+  target_link_libraries (${PAHO_LIBRARIES})
 endif (PAHO_FOUND)
 
 ########################################################################
