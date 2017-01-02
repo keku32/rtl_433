@@ -46,6 +46,9 @@ endif()
 find_package(PkgConfig)
 find_package(LibRTLSDR)
 
+find_path(PAHO_INCLUDE_DIR MQTTClient.h)
+find_library(PAHO_LIBRARY NAMES paho-mqtt3c)
+
 ########################################################################
 # Setup the include and linker paths
 ########################################################################
