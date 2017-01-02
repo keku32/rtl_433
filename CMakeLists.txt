@@ -53,9 +53,6 @@ endif()
 find_package(PkgConfig)
 find_package(LibRTLSDR)
 
-#find_path(PAHO_INCLUDE_DIR MQTTClient.h)
-#find_library(PAHO_LIBRARY NAMES paho-mqtt3c)
-
 ########################################################################
 # Setup the include and linker paths
 ########################################################################
@@ -63,6 +60,10 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/include
 	${LIBRTLSDR_INCLUDE_DIRS}
 )
+
+if(PAHO_FOUND)
+  target_link_libraries (${PROJECT_NAME} ${PAHO_LIBRARIES})
+endif (PAHO_FOUND)
 
 ########################################################################
 # Create uninstall target
