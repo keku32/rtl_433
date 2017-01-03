@@ -1,5 +1,5 @@
 /*
- * rtl_433, turns your Realtek RTL2832 based DVB dongle into a 433.92MHz generic data receiver
+ * rtl_433 turns your Realtek RTL2832 based DVB dongle into a 433.92MHz generic data receiver
  * Copyright (C) 2012 by Benjamin Larsson <benjamin@southpole.se>
  *
  * Based on rtl_sdr
@@ -212,30 +212,6 @@ char * str_replace ( const char *string, const char *substr, const char *replace
 }
 
 
-char * split_string(char * buffer, char * separator) {
-    char ** result = NULL;
-    char * p = strtok (buffer, separator);
-    int n_spaces = 0, i;
-
-    /* split string and append tokens to 'result' */
-    while (p) {
-        result = realloc (result, sizeof (char*) * ++n_spaces);
-        if (result == NULL)
-            exit (-1); /* memory allocation failed */
-
-        result[n_spaces-1] = p;
-        p = strtok (NULL, separator);
-    }
-
-    /* realloc one extra element for the last NULL */
-
-    result = realloc (result, sizeof (char*) * (n_spaces+1));
-    result[n_spaces] = 0;
-
-    return result;
-}
-
-
 static void register_protocol(struct dm_state *demod, r_device *t_dev) {
     struct protocol_state *p = calloc(1, sizeof (struct protocol_state));
     p->short_limit = (float) t_dev->short_limit / ((float) 1000000 / (float) samp_rate);
@@ -361,7 +337,7 @@ void data_acquired_handler(data_t *data)
 
     if (time(0) - timecheck > 40) {
         timecheck = time(0);
-        printf ("\nBuffer json_buffer = '%s', size = %d\n", json_buffer, buffer_size);
+        printf ("\nPublishing: '%s', size = %d\n", json_buffer, buffer_size);
         publish_mqtt(json_buffer, strlen(json_buffer));
 //        fflush(json_stream);
 //        json_buffer = NULL;
