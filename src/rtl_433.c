@@ -36,13 +36,12 @@
 #include "stdlib.h"
 #include "string.h"
 
-#define ADDRESS     "tcp://192.168.1.150:1883"
 #define CLIENTID    "WX_Station"
 #define TOPIC       "weatherstation"
 #define QOS         1
 #define TIMEOUT     10000L
 
-static char mqtt_host[27];
+char * mqtt_host = NULL;
 static int do_exit = 0;
 static int do_exit_async = 0, frequencies = 0, events = 0;
 uint32_t frequency[MAX_PROTOCOLS];
@@ -1076,10 +1075,9 @@ int main(int argc, char **argv) {
             add_kv_output();
 		} else if (strstr(optarg, "mqtt") == 0) {
 	    char * ns = NULL;
-	    ns = str_replace(optarg, "mqtt:", "tcp:\\\\");
+	    ns = str_replace(optarg, "mqtt:", "tcp://");
 	    strcpy(mqtt_host, ns);
 	    free(ns);
-	    printf("ADDED HOST %s\n", mqtt_host);
             add_mqtt_output();
 		} else {
                     fprintf(stderr, "Invalid output format %s\n", optarg);
