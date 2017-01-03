@@ -1076,6 +1076,7 @@ int main(int argc, char **argv) {
 		} else if (strstr(optarg, "mqtt")) {
 	    char * ns = NULL;
 	    ns = str_replace(optarg, "mqtt:", "tcp://");
+	    mqtt_host = malloc(sizeof(char) * strlen(ns));
 	    strcpy(mqtt_host, ns);
 	    free(ns);
             add_mqtt_output();
