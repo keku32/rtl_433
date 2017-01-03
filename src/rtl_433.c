@@ -42,6 +42,7 @@
 #define QOS         1
 #define TIMEOUT     10000L
 
+static char mqtt_host[27];
 static int do_exit = 0;
 static int do_exit_async = 0, frequencies = 0, events = 0;
 uint32_t frequency[MAX_PROTOCOLS];
@@ -142,7 +143,7 @@ void usage(r_device *devices) {
             "\t\t 2 = FM demodulated samples (int16) (experimental)\n"
             "\t\t 3 = Raw I/Q samples (cf32, 2 channel)\n"
             "\t\t Note: If output file is specified, input will always be I/Q\n"
-            "\t[-F] kv|json|mqtt|csv Produce decoded output in given format. Not yet supported by all drivers.\n"
+            "\t[-F] kv|json|mqtt:xxx.xxx.xxx.xxx:pppp|csv Produce decoded output in given format. Not yet supported by all drivers.\n"
             "\t[-C] native|si|customary Convert units in decoded output.\n"
             "\t[-T] specify number of seconds to run\n"
             "\t[-U] Print timestamps in UTC (this may also be accomplished by invocation with TZ environment variable set).\n"
@@ -185,6 +186,31 @@ static void sighandler(int signum) {
     rtlsdr_cancel_async(dev);
 }
 #endif
+
+
+char * str_replace ( const char *string, const char *substr, const char *replacement ){
+  char *tok = NULL;
+  char *newstr = NULL;
+  char *oldstr = NULL;
+  /* if either substr or replacement is NULL, duplicate string a let caller handle it */
+  if ( substr == NULL || replacement == NULL ) return strdup (string);
+  newstr = strdup (string);
+  while ( (tok = strstr ( newstr, substr ))){
+    oldstr = newstr;
+    newstr = malloc ( strlen ( oldstr ) - strlen ( substr ) + strlen ( replacement ) + 1 );
+    /*failed to alloc mem, free old string and return NULL */
+    if ( newstr == NULL ){
+      free (oldstr);
+      return NULL;
+    }
+    memcpy ( newstr, oldstr, tok - oldstr );
+    memcpy ( newstr + (tok - oldstr), replacement, strlen ( replacement ) );
+    memcpy ( newstr + (tok - oldstr) + strlen( replacement ), tok + strlen ( substr ), strlen ( oldstr ) - strlen ( substr ) - ( tok - oldstr ) );
+    memset ( newstr + strlen ( oldstr ) - strlen ( substr ) + strlen ( replacement ) , 0, 1 );
+    free (oldstr);
+  }
+  return newstr;
+}
 
 
 char * split_string(char * buffer, char * separator) {
@@ -264,8 +290,6 @@ static output_handler_t **next_output_handler = &output_handler;
 
 void publish_mqtt(char* message, size_t message_len) {
 
-// ----- MQTT code starts here -----
-
     MQTTClient client;
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
     MQTTClient_message pubmsg = MQTTClient_message_initializer;
@@ -291,8 +315,6 @@ void publish_mqtt(char* message, size_t message_len) {
     printf("Message with delivery token %d delivered\n", token);
     MQTTClient_disconnect(client, 10000);
     MQTTClient_destroy(&client);
-
-// ----- MQTT code ends here ----
 
 }
 
@@ -1046,11 +1068,14 @@ int main(int argc, char **argv) {
 	        quiet_mode = 1;
 		break;
 	    case 'F':
-		char split = split_string(optarg, " ");
-                printf("%s", split);
 		if (strcmp(optarg, "json") == 0) {
             add_json_output();
 		} else if (strcmp(optarg, "mqtt") == 0) {
+	    char ns=NULL;
+	    ns = str_replace(optarg, "mqtt:", "tcp:\\");
+	    mqtt_host = ns;
+	    free(ns);
+	    printf("ADDED HOST %s\n", mqtt_host);
             add_mqtt_output();
 		} else if (strcmp(optarg, "csv") == 0) {
             add_csv_output(determine_csv_fields(devices, num_r_devices));
