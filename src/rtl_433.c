@@ -1076,7 +1076,7 @@ int main(int argc, char **argv) {
             add_kv_output();
 		} else if (strstr(optarg, "mqtt") == 0) {
 	    char * ns = NULL;
-	    ns = str_replace(optarg, "mqtt:", "tcp:\\");
+	    ns = str_replace(optarg, "mqtt:", "tcp:\\\\");
 	    strcpy(mqtt_host, ns);
 	    free(ns);
 	    printf("ADDED HOST %s\n", mqtt_host);
