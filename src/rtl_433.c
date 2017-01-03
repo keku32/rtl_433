@@ -362,7 +362,7 @@ void data_acquired_handler(data_t *data)
 
     if (time(0) - timecheck > 40) {
         timecheck = time(0);
-        printf ("\nBuffer json_buffer = '%s', size = %ld\n", json_buffer, buffer_size);
+        printf ("\nBuffer json_buffer = '%s', size = %d\n", json_buffer, buffer_size);
         publish_mqtt(json_buffer, strlen(json_buffer));
 //        fflush(json_stream);
 //        json_buffer = NULL;
