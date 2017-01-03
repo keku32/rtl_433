@@ -296,7 +296,7 @@ void publish_mqtt(char* message, size_t message_len) {
     MQTTClient_deliveryToken token;
     int rc;
  
-    MQTTClient_create(&client, ADDRESS, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    MQTTClient_create(&client, mqtt_host, CLIENTID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
     conn_opts.keepAliveInterval = 20;
     conn_opts.cleansession = 1;
  
