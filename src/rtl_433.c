@@ -1073,7 +1073,7 @@ int main(int argc, char **argv) {
 		} else if (strcmp(optarg, "mqtt") == 0) {
 	    char ns=NULL;
 	    ns = str_replace(optarg, "mqtt:", "tcp:\\");
-	    mqtt_host = ns;
+	    strcpy(mqtt_host, ns);
 	    free(ns);
 	    printf("ADDED HOST %s\n", mqtt_host);
             add_mqtt_output();
