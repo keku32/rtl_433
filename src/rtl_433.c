@@ -1070,17 +1070,17 @@ int main(int argc, char **argv) {
 	    case 'F':
 		if (strcmp(optarg, "json") == 0) {
             add_json_output();
-		} else if (strcmp(optarg, "mqtt") == 0) {
-	    char ns=NULL;
+		} else if (strcmp(optarg, "csv") == 0) {
+            add_csv_output(determine_csv_fields(devices, num_r_devices));
+		} else if (strcmp(optarg, "kv") == 0) {
+            add_kv_output();
+		} else if (strstr(optarg, "mqtt") == 0) {
+	    char * ns = NULL;
 	    ns = str_replace(optarg, "mqtt:", "tcp:\\");
 	    strcpy(mqtt_host, ns);
 	    free(ns);
 	    printf("ADDED HOST %s\n", mqtt_host);
             add_mqtt_output();
-		} else if (strcmp(optarg, "csv") == 0) {
-            add_csv_output(determine_csv_fields(devices, num_r_devices));
-		} else if (strcmp(optarg, "kv") == 0) {
-            add_kv_output();
 		} else {
                     fprintf(stderr, "Invalid output format %s\n", optarg);
                     usage(devices);
