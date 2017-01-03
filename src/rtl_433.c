@@ -1073,7 +1073,7 @@ int main(int argc, char **argv) {
             add_csv_output(determine_csv_fields(devices, num_r_devices));
 		} else if (strcmp(optarg, "kv") == 0) {
             add_kv_output();
-		} else if (strstr(optarg, "mqtt") == 0) {
+		} else if (strstr(optarg, "mqtt")) {
 	    char * ns = NULL;
 	    ns = str_replace(optarg, "mqtt:", "tcp://");
 	    strcpy(mqtt_host, ns);
