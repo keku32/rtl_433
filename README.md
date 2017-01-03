@@ -1,6 +1,13 @@
 rtl_433
 =======
 
+I forked this from merbanan/rtl_433 to add MQTT support. 
+To add MQTT publishing you need to use the mqtt switch with the -F option. 
+
+For example: mqtt_433 -F mqtt:192.168.1.1:1893 will attempt to connect to the broker on IP 192.168.1.1 and port 1893.
+
+See documentation or run rtl_433 -h for the correct syntax. 
+
 rtl_433 turns your Realtek RTL2832 based DVB dongle into a 433.92MHz generic data receiver
 
 How to add support for unsupported sensors
@@ -74,7 +81,7 @@ Usage:	= Tuner options =
 		 2 = FM demodulated samples (int16) (experimental)
 		 3 = Raw I/Q samples (cf32, 2 channel)
 		 Note: If output file is specified, input will always be I/Q
-	[-F] kv|json|csv Produce decoded output in given format. Not yet supported by all drivers.
+	[-F] kv|json|csv|mqtt:xxx.xxx.xxx.xxx:pppp Produce decoded output in given format. Not yet supported by all drivers.
 	[-C] native|si|customary Convert units in decoded output.
 	[-T] specify number of seconds to run
 	[-U] Print timestamps in UTC (this may also be accomplished by invocation with TZ environment variable set).
